@@ -1,0 +1,13 @@
+{
+    "conventionalCommits.scopes": [
+        "ipynb",
+        "streamlit",
+        "readme",
+        "MP3 Page",
+        "Youtube page",
+        "Summarization",
+        "python",
+        "NER",
+        "Sentiment_Analyser"
+    ]
+}

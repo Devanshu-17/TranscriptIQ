@@ -1,0 +1,24 @@
+pytube
+moviepy
+# ffmpeg
+ffmpeg-python
+setuptools-rust
+tiktoken==0.3.3
+# ffmpeg-python==0.2.0
+streamlit
+datetime
+pandas
+pyperclip
+#openai-whisper
+opencv-python
+mutagen
+pydub
+yt_dlp
+git+https://github.com/openai/whisper.git 
+python-dotenv
+azure-ai-textanalytics
+st-annotated-text
+pandas
+plotly-express
+vaderSentiment
+matplotlib
