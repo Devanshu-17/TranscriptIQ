@@ -1,10 +1,12 @@
 from clarifai_grpc.channel.clarifai_channel import ClarifaiChannel
 from clarifai_grpc.grpc.api import resources_pb2, service_pb2, service_pb2_grpc
 from clarifai_grpc.grpc.api.status import status_code_pb2
+import streamlit as st
+
 
 def summarize_with_cohere(text):
     # Cohere credentials and model details
-    PAT = '5ec7ba9db93d49af8fd2275ef6dc9af7'  
+    PAT = st.secrets["PATS"]
     USER_ID = 'cohere'
     APP_ID = 'summarize'
     MODEL_ID = 'cohere-summarize'
