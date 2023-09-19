@@ -12,5 +12,4 @@ spacy
 st_annotated_text
 streamlit
 vaderSentiment
-vaderSentiment
 yt_dlp
