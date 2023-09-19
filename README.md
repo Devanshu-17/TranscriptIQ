@@ -1,62 +1,60 @@
-# Transcribe YouTube Video
+# TranscriptIQ
+TranscriptIQ is a project that enables users to transcribe YouTube videos and perform various NLP (Natural Language Processing) tasks, chat with youtube video and many more on the transcribed text. 
 
-This streamlit application allows you to transcribe any YouTube video by providing the YouTube link. It utilizes the Whisper speech recognition model developed by OpenAI to automatically detect the language and transcribe the video's audio.
+## Deployed app link: 
+### https://transcript-iq.streamlit.app/
 
----
-
-## Demo
-
-You can try out the application by accessing the online demo [here](https://emaddar-whisper-streamlit-app-hjg7jx.streamlit.app/).
-
----
-
-## Installation
-
-To run the application locally, follow these steps:
-
-1. Clone the repository:
-
-```bash
-git clone https://github.com/emaddar/whisper_streamlit
+## Directory Structure
 ```
-2. Install the required dependencies:
+./
+├── LICENSE
+├── README.md
+├── app.py
+├── images
+│   ├── AI.jpg
+│   ├── NER.png
+│   ├── Robot_whisper1.jpg
+│   ├── Robot_whisper2.jpg
+│   ├── Robot_whisper3.jpg
+│   ├── expander.png
+│   ├── mp3_2_text.png
+│   ├── resum.png
+│   └── youtube2text.png
+├── myfunctions
+│   ├── __pycache__
+│   ├── my_functions.py
+│   └── my_summarization_functions.py
+├── packages.txt
+├── pages
+│   ├── Chat.py
+│   ├── Transcribe Youtube.py
+│   └── static
+└── requirements.txt
 
-```bash
-pip install -r requirements.txt
+6 directories, 18 files
 ```
-3. Run the application:
-```bash
-streamlit run app.py
-```
----
+
+## Functionality
+The main functionality of TranscriptIQ is provided by the `transcribe_youtube.py` script. It uses the Streamlit library to create a user interface for transcribing YouTube videos and performing NLP tasks. Here is a brief overview of the functionality provided by the script:
+
+- Retrieve YouTube video information (title, author, views, duration, etc.)
+- Download YouTube videos as MP4 format
+- Convert MP4 videos to MP3 audio files
+- Transcribe MP3 audio files to text using speech-to-text technology
+- Perform text summarization using the Cohere API
+- Perform Named Entity Recognition (NER) using the Spacy library
+- Generate graphs based on NER results
+- Perform sentiment analysis using the VADER library
+- Display word clouds based on NER results
 
 ## Usage
-1. Enter the YouTube link of the video you want to transcribe in the provided text input field.
+To use TranscriptIQ, you can run the `app.py` script. This will start the Streamlit app and you can interact with it to transcribe YouTube videos and perform NLP tasks on the transcribed text.
 
-2. Click the "Transcribe" button to initiate the transcription process.
+Note: Before running the script, make sure you have installed all the required packages listed in `requirements.txt`.
 
-3. The application will download the YouTube video, convert it to MP3 format, transcribe the audio using the Whisper model, and display the transcribed text.
+```python
+streamlit run app.py
+```
 
-4. The detected language, transcription segments with their corresponding timestamps, and a download button for the transcribed text as a CSV file will be shown.
-
-5. You can listen to the audio and watch the video alongside the transcribed text.
-
-![](images/youtube2text.png)
-
-![](images/mp3_2_text.png)
-
----
-
-## New Features
-- `28/06/2023` **Transcribe Audio Files**: You can now select your audio file (.mp3, .wav, .aac) and the application will transcribe it for you.
-
-- `04/07/2023` **WebVTT Transcription**: The application now includes an expander feature where you can find the transcription in Web Video Text Tracks (WebVTT) format. This format allows you to easily integrate the transcribed text into web-based video players or platforms that support WebVTT subtitles.
-![](images/expander.png)
-
-- `05/07/2023`: **Extractive & Abstractive Summarization**: Whenever you request a transcription of an audio or video, the application will also provide two types of text summaries - extractive and abstractive summarization.
-![](images/resum.png)
-
----
-
-## Contributing
-Contributions to this project are welcome. Feel free to open issues or submit pull requests for any improvements or fixes you would like to contribute.
+## Credits
+TranscriptIQ was developed as part of the Streamlit LLM Hackathon. The project was created by [Devanshu](https://github.com/Devanshu-17), [Somesh](https://github.com/someshfengde).
