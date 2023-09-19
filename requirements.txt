@@ -12,4 +12,5 @@ spacy
 st_annotated_text
 streamlit
 vaderSentiment
+openai
 yt_dlp
