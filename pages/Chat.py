@@ -63,10 +63,10 @@ with chat_placeholder:
         div = f"""
 <div class="chat-row 
     {'' if chat.origin == 'ai' else 'row-reverse'}">
-    <img class="chat-icon" src="pages/static/{
-        'ai_icon.png' if chat.origin == 'ai' 
-                      else 'user_icon.png'}"
-         width=32 height=32>
+    <img class="chat-icon" src="{
+        'https://raw.githubusercontent.com/Devanshu-17/TranscriptIQ/main/pages/static/ai_icon.png' if chat.origin == 'ai' 
+                    else 'https://raw.githubusercontent.com/Devanshu-17/TranscriptIQ/main/pages/static/user_icon.png'}"
+        width=32 height=32>
     <div class="chat-bubble
     {'ai-bubble' if chat.origin == 'ai' else 'human-bubble'}">
         &#8203;{chat.message}

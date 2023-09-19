@@ -10,13 +10,20 @@ from annotated_text import annotated_text
 import pandas as pd
 import plotly.express as px
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-import streamlit_scrollable_textbox as stx
 import pyecharts.options as opts
 from pyecharts.charts import Bar3D
 from collections import Counter
 from pyecharts.charts import WordCloud
 from pyecharts.charts import Gauge
+from dataclasses import dataclass
+from typing import Literal
+import streamlit as st
 
+from langchain import OpenAI
+from langchain.callbacks import get_openai_callback
+from langchain.chains import ConversationChain
+from langchain.chains.conversation.memory import ConversationSummaryMemory
+import streamlit.components.v1 as components
 result = BytesIO()
 
 st.set_page_config(layout="wide",
@@ -31,8 +38,8 @@ def make_grid(cols,rows):
             grid[i] = st.columns(rows)
     return grid
 
-with st.sidebar:
-    st.image('images/Robot_whisper2.jpg')
+# with st.sidebar:
+#     st.image('images/Robot_whisper2.jpg')
 
 st.header('Transcribe YouTube Video :video_camera:')
 
@@ -53,7 +60,7 @@ except AttributeError:
 
 
 # Specify the YouTube video URL
-video_url = st.text_input('Youtube link', 'https://www.youtube.com/watch?v=8Zx04h24uBs&ab_channel=LexClips')
+video_url = st.text_input('Youtube link', 'https://www.youtube.com/watch?v=MJs-1QxWCbI&pp=ygUfc3BlZWNoIGFtZXJpY2FuIHRlY2hHb29nbGUgQ0VPIA%3D%3D')
 youtube_button = st.button('Transcribe')
 
 if youtube_button or st.session_state.keep_graphics:
@@ -257,7 +264,6 @@ if youtube_button or st.session_state.keep_graphics:
         # #st.text_area("The Summarized Text",file_contents, height=400)
         # st.write()
 
-        st.markdown("---")
         st.markdown("### Text summarization ")
 
 
@@ -268,8 +274,7 @@ if youtube_button or st.session_state.keep_graphics:
         st.text_area("Summary: ", extractive_summarization)
         
         st.markdown("---")
-        
-
+    
 
         st.markdown("""### 🇳 🇪 🇷 (Named Entity Recognition)""")
         st.write("Named Entity Recognition (NER) is a natural language processing (NLP) task that involves identifying and classifying named entities within text into predefined categories. These entities can include names of people, organizations, locations, dates, quantities, and more as you can see in the photo.")
@@ -313,13 +318,12 @@ if youtube_button or st.session_state.keep_graphics:
 
         # Save the word cloud as an HTML file
         wordcloud.render("wordcloud_ner.html")
-
+        st.session_state.keep_graphics = True
         # Display the word cloud using Streamlit
         st.subheader("Word Cloud")
         with open("wordcloud_ner.html", "r") as f:
             html = f.read()
         st.components.v1.html(html, height=600, width=900)
-
 
 
 
@@ -374,12 +378,130 @@ if youtube_button or st.session_state.keep_graphics:
             gauge_html_color = f.read()
         st.components.v1.html(gauge_html_color, height=500, width=800)
 
-    for i in range(20):
-        st.write("")
 
-    st.markdown("""
-    ----
-    **Contact** :
+@dataclass
+class Message:
+    """Class for keeping track of a chat message."""
+    origin: Literal["human", "ai"]
+    message: str
 
-    Made with :heart: for Streamlit LLM Hackathon
-    """)
+def load_css():
+    with open("pages/static/styles.css", "r") as f:
+        css = f"<style>{f.read()}</style>"
+        st.markdown(css, unsafe_allow_html=True)
+
+def initialize_session_state():
+    if "history" not in st.session_state:
+        st.session_state.history = []
+    if "token_count" not in st.session_state:
+        st.session_state.token_count = 0
+    if "conversation" not in st.session_state:
+        llm = OpenAI(
+            temperature=0,
+            openai_api_key=st.secrets["openai_api_key"],
+            model_name="text-davinci-003"
+        )
+        st.session_state.conversation = ConversationChain(
+            llm=llm,
+            memory=ConversationSummaryMemory(llm=llm),
+        )
+
+def on_click_callback():
+    with get_openai_callback() as cb:
+        context_summary = extractive_summarization
+        human_prompt_before = st.session_state.human_prompt
+        human_prompt = f"""{st.session_state.human_prompt} 
+        ---
+        context for summarisation is
+        {context_summary}
+        """
+        llm_response = st.session_state.conversation.run(
+            human_prompt
+        )
+        st.session_state.history.append(
+            Message("human", human_prompt_before)
+        )
+        st.session_state.history.append(
+            Message("ai", llm_response)
+        )
+        st.session_state.token_count += cb.total_tokens
+
+load_css()
+initialize_session_state()
+
+st.title("TranscriptAI: Talk with video 🧙‍♂️ ")
+
+chat_placeholder = st.container()
+prompt_placeholder = st.form("chat-form")
+credit_card_placeholder = st.empty()
+
+with chat_placeholder:
+    for chat in st.session_state.history:
+        div = f"""
+<div class="chat-row 
+    {'' if chat.origin == 'ai' else 'row-reverse'}">
+    <img class="chat-icon" src="{
+        'https://raw.githubusercontent.com/Devanshu-17/TranscriptIQ/main/pages/static/ai_icon.png' if chat.origin == 'ai' 
+                    else 'https://raw.githubusercontent.com/Devanshu-17/TranscriptIQ/main/pages/static/user_icon.png'}"
+        width=32 height=32>
+    <div class="chat-bubble
+    {'ai-bubble' if chat.origin == 'ai' else 'human-bubble'}">
+        &#8203;{chat.message}
+    </div>
+</div>
+        """
+        st.markdown(div, unsafe_allow_html=True)
+    
+    for _ in range(3):
+        st.markdown("")
+
+with prompt_placeholder:
+    st.markdown("**Chat**")
+    cols = st.columns((6, 1))
+    cols[0].text_input(
+        "Chat",
+        value="Hey",
+        label_visibility="collapsed",
+        key="human_prompt",
+    )
+    cols[1].form_submit_button(
+        "Send", 
+        type="primary", 
+        on_click=on_click_callback, 
+    )
+
+components.html("""
+<script>
+const streamlitDoc = window.parent.document;
+
+const buttons = Array.from(
+    streamlitDoc.querySelectorAll('.stButton > button')
+);
+const submitButton = buttons.find(
+    el => el.innerText === 'Submit'
+);
+
+streamlitDoc.addEventListener('keydown', function(e) {
+    switch (e.key) {
+        case 'Enter':
+            submitButton.click();
+            break;
+    }
+});
+</script>
+""", 
+    height=0,
+    width=0,
+)
+
+for i in range(20):
+    st.write("")
+
+
+
+st.markdown("""
+----
+**Contact** :
+
+Made with :heart: for Streamlit LLM Hackathon
+""")
