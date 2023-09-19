@@ -60,7 +60,7 @@ except AttributeError:
 
 
 # Specify the YouTube video URL
-video_url = st.text_input('Youtube link', 'https://www.youtube.com/watch?v=MJs-1QxWCbI&pp=ygUfc3BlZWNoIGFtZXJpY2FuIHRlY2hHb29nbGUgQ0VPIA%3D%3D')
+video_url = st.text_input('Youtube link', 'https://www.youtube.com/watch?v=MJs-1QxWCbI')
 youtube_button = st.button('Transcribe')
 
 if youtube_button or st.session_state.keep_graphics:
