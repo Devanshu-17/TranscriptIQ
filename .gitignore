@@ -8,10 +8,10 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+.streamlit/
 # C extensions
 *.so
-
+pages/.streamlit/
 # Distribution / packaging
 .Python
 build/
@@ -177,3 +177,5 @@ poetry.toml
 pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python.streamlit/
+.streamlit/secrets.toml
+pages/.streamlit/secrets.toml
