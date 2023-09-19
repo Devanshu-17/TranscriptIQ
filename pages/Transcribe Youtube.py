@@ -291,7 +291,7 @@ if youtube_button or st.session_state.keep_graphics:
         with st.spinner("Generating and displaying the graph..."):
                 save_path = 'output.html'  # Set the path where you want to save the graph
                 get_graph(file_contents, save_path)
-                st.subheader("Graph - NPM Dependencies")
+                st.subheader("Graph - NER graph")
                 st.components.v1.html(open(save_path, 'r').read(), height=600, width=900)
 
         # Perform Named Entity Recognition (NER) and extract entities
