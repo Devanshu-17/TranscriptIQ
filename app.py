@@ -35,6 +35,6 @@ st.markdown("""
 ----
 ### About the project
 This project was developed as the part of LLM hackathon arranged by Streamlit. If any queries don't hesitate to reach out and raise an  issue in a repo :) .  
-
+The project was created by [Devanshu](https://github.com/Devanshu-17), [Somesh](https://github.com/someshfengde).
 
 """)
