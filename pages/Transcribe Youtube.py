@@ -3,13 +3,19 @@ import os
 from datetime import datetime
 from moviepy.editor import VideoFileClip
 from myfunctions.my_functions import current_directory, create_folder_and_directories, download_youtube, rename_videos, mp4_to_mp3, transcribe_mp3, download_youtube1, get_video_info
-from myfunctions.my_summarization_functions import sample_extractive_summarization, sample_abstractive_summarization, sample_recognize_to_annotated_text, list_to_dict
-from myfunctions.text_sentiment import plot_sentiment
+from myfunctions.my_summarization_functions import summarize_with_cohere
+from myfunctions.my_summarization_functions import ner_spacy, get_graph
 from io import BytesIO
 from annotated_text import annotated_text
 import pandas as pd
 import plotly.express as px
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+import streamlit_scrollable_textbox as stx
+import pyecharts.options as opts
+from pyecharts.charts import Bar3D
+from collections import Counter
+from pyecharts.charts import WordCloud
+from pyecharts.charts import Gauge
 
 result = BytesIO()
 
@@ -255,16 +261,12 @@ if youtube_button or st.session_state.keep_graphics:
         st.markdown("### Text summarization ")
 
 
-        mygrid0 = make_grid(1,2)
-        with mygrid0[0][0]:
-            with st.spinner("Extractive Summarization ..."):
-                extractive_summarization = sample_extractive_summarization([file_contents])
-            st.text_area("Extractive Summarization", extractive_summarization, height=200)
-        with mygrid0[0][1]:
-            with st.spinner("Abstractive Summarization ..."):
-                abstractive_summarization = sample_abstractive_summarization([file_contents])
-            st.text_area("Abstractive Summarization", abstractive_summarization, height=200)
 
+        
+        with st.spinner("Summarization ..."):
+                extractive_summarization = summarize_with_cohere(file_contents)
+        st.text_area("Summary: ", extractive_summarization)
+        
         st.markdown("---")
         
 
@@ -273,33 +275,52 @@ if youtube_button or st.session_state.keep_graphics:
         st.write("Named Entity Recognition (NER) is a natural language processing (NLP) task that involves identifying and classifying named entities within text into predefined categories. These entities can include names of people, organizations, locations, dates, quantities, and more as you can see in the photo.")
         st.image("images/NER.png")
         
-        mygrid1 = make_grid(1,2)
-        with mygrid1[0][0]:
-            with st.spinner("NER (Named Entity Recognition) ..."):
-                annotated_text(*sample_recognize_to_annotated_text([file_contents]))
+        # Change it to use your custom NER function
+      
+        with st.spinner("NER (Named Entity Recognition) ..."):
+                ner_entities = ner_spacy(file_contents)
+                annotated_text(*[(ent.text, ent.label_) for ent in ner_entities])
 
-        with mygrid1[0][1]:
-            with st.spinner("DataFrame ..."):
-                dico = list_to_dict([file_contents])
-                df = pd.DataFrame(dico.items(), columns=['Entity', 'Values'])
-                
-                df['Unique Values'] = df['Values'].apply(lambda x: list(set(x)))
-                df['Number of Elements'] = df['Values'].apply(lambda x: len(x))
-                df = df.drop_duplicates(subset='Values').reset_index(drop=True)
-                df = df.drop('Values', axis=1)  # Drop the 'Values' column
-                st.dataframe(df)
+        # Update this section to use the custom NER results and generate the graph
+        
+        with st.spinner("Generating and displaying the graph..."):
+                save_path = 'output.html'  # Set the path where you want to save the graph
+                get_graph(file_contents, save_path)
+                st.subheader("Graph - NPM Dependencies")
+                st.components.v1.html(open(save_path, 'r').read(), height=600, width=900)
 
-        # Create the bar chart using Plotly
-        fig = px.bar(df, x='Entity', y='Number of Elements', labels={'Entity': 'Entity', 'Count': 'Number of Values'})
+        # Perform Named Entity Recognition (NER) and extract entities
+        with st.spinner("Generating and displaying the word cloud..."):
+            ner_entities = ner_spacy(file_contents)
 
-        # Set layout properties
-        fig.update_layout(
-            xaxis=dict(tickangle=0),
-            height=400  # Adjust the height as per your requirement
+        # Extract named entities and their counts
+        ner_entity_counts = Counter([ent.text for ent in ner_entities])
+
+        # Create a list of tuples containing (entity, count) for word cloud
+        words = [(entity, count) for entity, count in ner_entity_counts.items()]
+
+       # Create the word cloud
+        wordcloud = (
+            WordCloud()
+            .add(
+                "",
+                words,
+                word_size_range=[20, 100],
+                textstyle_opts=opts.TextStyleOpts(font_family="cursive"),
+            )
+            .set_global_opts(title_opts=opts.TitleOpts(title=""))
         )
 
-        # Display the chart using Streamlit
-        st.plotly_chart(fig, use_container_width = True)    
+        # Save the word cloud as an HTML file
+        wordcloud.render("wordcloud_ner.html")
+
+        # Display the word cloud using Streamlit
+        st.subheader("Word Cloud")
+        with open("wordcloud_ner.html", "r") as f:
+            html = f.read()
+        st.components.v1.html(html, height=600, width=900)
+
+
 
 
         st.markdown("---")
@@ -311,9 +332,6 @@ if youtube_button or st.session_state.keep_graphics:
         analyser = SentimentIntensityAnalyzer()
         score = analyser.polarity_scores(file_contents)
         polarity_vader = score['compound']
-        
-    
-
 
         mygrid2 = make_grid(1,3)
         with mygrid2[0][1]:
@@ -326,9 +344,35 @@ if youtube_button or st.session_state.keep_graphics:
         else:
             st.write("The sentiment of this text is likely to be negative")
             
-        fig = plot_sentiment(polarity_vader)
-        # Display the plot in Streamlit
-        st.pyplot(fig)
+        # fig = plot_sentiment(polarity_vader)
+        # # Display the plot in Streamlit
+        # st.pyplot(fig)
+
+# Create the gauge chart with different color segments
+        gauge_chart = (
+            Gauge()
+            .add(
+                "Sentiment",
+                [("Sentiment", polarity_vader * 100)],
+                axisline_opts=opts.AxisLineOpts(
+                    linestyle_opts=opts.LineStyleOpts(
+                        color=[(0.3, "#67e0e3"), (0.7, "#37a2da"), (1, "#fd666d")], width=30
+                    )
+                ),
+            )
+            .set_global_opts(
+                title_opts=opts.TitleOpts(title="Sentiment Gauge"),
+                legend_opts=opts.LegendOpts(is_show=False),
+            )
+        )
+
+        # Save the gauge chart as an HTML file
+        gauge_chart.render("gauge_chart_color.html")
+
+        # Read the HTML file and display its content using Streamlit
+        with open("gauge_chart_color.html", "r") as f:
+            gauge_html_color = f.read()
+        st.components.v1.html(gauge_html_color, height=500, width=800)
 
     for i in range(20):
         st.write("")
@@ -337,5 +381,5 @@ if youtube_button or st.session_state.keep_graphics:
     ----
     **Contact** :
 
-    If you have any questions, suggestions or bug to report, you can contact me via my email: [e.a.darwich@gmail.com](https://www.linkedin.com/in/e-darwich/)
+    Made with :heart: for Streamlit LLM Hackathon
     """)
