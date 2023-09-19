@@ -4,6 +4,13 @@ TranscriptIQ is a project that enables users to transcribe YouTube videos and pe
 ## Deployed app link: 
 ### https://transcript-iq.streamlit.app/
 
+## Implementation video 
+
+
+https://github.com/Devanshu-17/TranscriptIQ/assets/42097653/c018a440-c613-4cfa-8440-edb5bc07bb26
+
+
+
 ## Directory Structure
 ```
 ./
@@ -55,6 +62,8 @@ Note: Before running the script, make sure you have installed all the required p
 ```python
 streamlit run app.py
 ```
+
+
 
 ## Credits
 TranscriptIQ was developed as part of the Streamlit LLM Hackathon. The project was created by [Devanshu](https://github.com/Devanshu-17), [Somesh](https://github.com/someshfengde).
