@@ -195,36 +195,6 @@ def transcribe_mp3(mp3_directory, name):
     return result
 
 
-# import assemblyai as aai
-
-# def get_entities(mp3_directory, name):
-#     # Set your AssemblyAI API key
-#     aai.settings.api_key = f"b8e384fd6d7d48c78403c63cf532f1b4"
-
-#     # Create a TranscriptionConfig with entity detection enabled
-#     config = aai.TranscriptionConfig(entity_detection=True)
-
-#     # Specify the URL to your MP3 file or use a local file path
-#     mp3_file_url = f"{mp3_directory}/{name}.mp3"
-
-#     # Create a Transcriber instance
-#     transcriber = aai.Transcriber()
-
-#     # Transcribe the MP3 file using AssemblyAI
-#     transcript = transcriber.transcribe(mp3_file_url, config=config)
-
-#     result = transcript.text
-
-#     print(result)
-
-#     # Return the transcription result and detected entities
-#     return result, transcript.entities
-
-
-
-
-
-
 def with_opencv(filename):
     # video = cv2.VideoCapture(filename)
     # # count the number of frames
