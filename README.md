@@ -1,14 +1,10 @@
 # TranscriptIQ
 TranscriptIQ is a project that enables users to transcribe YouTube videos and perform various NLP (Natural Language Processing) tasks, chat with youtube video and many more on the transcribed text. 
 
-## Deployed app link: 
-### https://transcript-iq.streamlit.app/
-
 ## Implementation video 
 
 
 https://github.com/Devanshu-17/TranscriptIQ/assets/42097653/c018a440-c613-4cfa-8440-edb5bc07bb26
-
 
 
 ## Directory Structure
