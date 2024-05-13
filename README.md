@@ -68,3 +68,10 @@ streamlit run app.py
 
 ## Credits
 TranscriptIQ was developed as part of the Streamlit LLM Hackathon. The project was created by [Devanshu](https://github.com/Devanshu-17), [Somesh](https://github.com/someshfengde).
+
+
+- [ ] demo running
+- [ ] understand pricing points on customgpt.ai
+- [ ] plan for a the link of videos. ( 20 videos downloaded as mp4 )
+- [ ] build a demo according to the plan. 
+

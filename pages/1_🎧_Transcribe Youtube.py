@@ -399,7 +399,7 @@ if youtube_button or st.session_state.keep_graphics:
                 llm = OpenAI(
                     temperature=0,
                     openai_api_key=st.secrets["openai_api_key"],
-                    model_name="text-davinci-003"
+                    model_name="gpt-3.5-turbo"
                 )
                 st.session_state.conversation = ConversationChain(
                     llm=llm,
